@@ -1,0 +1,48 @@
+#version 330
+
+in vec2 texCoord0;
+in vec3 toLightVector;
+in vec3 normalVector;
+in vec3 toCameraVector;
+in float visibility;
+out vec4 outColor;
+
+uniform sampler2D grassTexture;
+uniform sampler2D dirtTexture;
+uniform sampler2D flowerTexture;
+uniform sampler2D tileTexture;
+uniform sampler2D blendMapTexture;
+
+uniform vec3 lightColor;
+uniform float reflectivity;
+uniform float shaderDump;
+uniform vec3 skyColor;
+
+void main()
+{
+	vec3 unitNormalVector = normalize(normalVector);
+	vec3 unitToLightVector = normalize(toLightVector);
+	float dotProduct = dot(unitToLightVector, unitNormalVector);
+	float brightness = max(dotProduct, 0.2);
+	vec3 diffuse = brightness * lightColor;
+	
+
+	vec3 lightDirection = -unitToLightVector; 
+	vec3 reflectedLight = reflect(lightDirection, unitNormalVector);
+	float specularFactor = dot(normalize(toCameraVector), reflectedLight);
+	specularFactor = max(specularFactor, 0.0);
+	float dumpFactor = pow(specularFactor , shaderDump);
+	vec3 finalSpecular = dumpFactor * lightColor;
+
+	vec4 blendMapColor = texture2D(blendMapTexture, texCoord0);
+	float backgroundAmount = 1 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);
+	vec2 texCoord = texCoord0 * 40;
+	vec4 backgroundColor = texture2D(grassTexture, texCoord) * 1;
+	vec4 dirtColor = texture2D(dirtTexture, texCoord) * blendMapColor.r;
+	vec4 flowerColor = texture2D(flowerTexture, texCoord) * blendMapColor.g;
+	vec4 tileColor = texture2D(tileTexture, texCoord)* blendMapColor.b;
+	vec4 finalColor = backgroundColor + dirtColor + flowerColor + tileColor;
+	
+	outColor = vec4(diffuse, 1.0) * finalColor  + vec4(finalSpecular, 1.0);
+	outColor = mix(vec4(skyColor, 1.0), outColor, visibility);
+}

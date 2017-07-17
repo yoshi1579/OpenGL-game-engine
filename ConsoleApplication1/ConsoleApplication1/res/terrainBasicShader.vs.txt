@@ -1,0 +1,32 @@
+#version 330
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texCoord;
+layout(location = 2) in vec3 normal;
+uniform mat4 transMatrix;
+uniform mat4 projectionMatirx;
+uniform vec3 lightPosition;
+uniform vec3 cameraPos;
+out vec2 texCoord0;
+out vec3 toLightVector;
+out vec3 normalVector;
+out vec3 toCameraVector;
+out float visibility;
+
+const float fogDensity = 0.007;
+const float gradient = 1.5;
+
+void main()
+{
+	vec4 worldPosition = transMatrix * vec4(position, 1.0);
+	gl_Position = projectionMatirx * transMatrix * vec4(position, 1.0);
+	texCoord0 = texCoord;
+	normalVector = (transMatrix * vec4(normal, 0.0)).xyz;
+	toLightVector = lightPosition - worldPosition.xyz;
+	toCameraVector  = cameraPos - worldPosition.xyz;
+
+	float distanceToCamera = length(toCameraVector);
+	visibility = exp(-pow(distanceToCamera* fogDensity, gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
+
+}

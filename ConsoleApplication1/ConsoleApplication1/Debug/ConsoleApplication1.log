@@ -1,0 +1,7 @@
+﻿  main.cpp
+c:\users\vivay\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\player.h(8): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\vivay\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\player.h(9): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\vivay\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\main.cpp(212): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\vivay\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\main.cpp(213): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+  ConsoleApplication1.vcxproj -> C:\Users\vivay\documents\visual studio 2015\Projects\ConsoleApplication1\Debug\ConsoleApplication1.exe
+  ConsoleApplication1.vcxproj -> C:\Users\vivay\documents\visual studio 2015\Projects\ConsoleApplication1\Debug\ConsoleApplication1.pdb (Full PDB)

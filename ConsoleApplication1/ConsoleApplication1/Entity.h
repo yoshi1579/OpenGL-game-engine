@@ -26,6 +26,9 @@ public:
 	glm::vec3 GetRotation();
 	glm::vec3 GetPosition();
 	void SetPositionY(float posY);
+
+	float CalculateTextureOffsetX(int texIndex);
+	float CalculateTextureOffsetY(int texIndex);
 };
 #endif // !ENTITY_H
 

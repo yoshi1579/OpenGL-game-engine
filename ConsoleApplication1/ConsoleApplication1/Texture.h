@@ -9,6 +9,7 @@ class Texture
 {
 public:
 	Texture(const string& fileName, bool bTransparency, bool bFakeNormal);
+	Texture(string* fileNames, bool bTransparency, bool bFakeNormal);
 	Texture();
 	Texture(const Texture& other)
 	{
@@ -30,18 +31,21 @@ public:
 	}
 
 	// set openGL to start using whatever texture, unit is how many textures I want to bind
-	void Bind(GLenum uint);
+	void Bind(GLenum uint, bool is2D);
 	void SetBackFaceCull();
+	void SetNumOfRows(int numRow);
 
 	inline void SetHasTransparency() { hasTransparency = true; }
 	inline void SetNeedFakeNormal(bool bFakeNormal) { needFakeNormal = bFakeNormal;  }
 	inline bool GetNeedFakeNormal() { return needFakeNormal; }
+	inline int GetTextureRows() { return textureRows; }
 	virtual ~Texture();
 private:
 
 	GLuint m_texture;
 	bool hasTransparency = false;
 	bool needFakeNormal = false;
+	int textureRows = 1; 
 };
 #endif // ! TECTURE_H
 

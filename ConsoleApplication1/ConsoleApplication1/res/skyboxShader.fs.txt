@@ -1,0 +1,10 @@
+#version 400
+
+uniform samplerCube cubeMap;
+in vec3 texCoord0;
+out vec4 outColor;
+
+void main()
+{
+	outColor= texture(cubeMap, texCoord0);
+}

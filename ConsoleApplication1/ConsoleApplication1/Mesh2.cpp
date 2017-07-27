@@ -87,6 +87,26 @@ void Mesh::Draw()
 	glBindVertexArray(0);
 }
 
+void Mesh::SkyboxDraw()
+{
+	glBindVertexArray(m_glVertexArrayObject);
+	glDisable(GL_CULL_FACE);
+	//glDrawElements(GL_TRIANGLES, draw_count, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, draw_count);
+	glBindVertexArray(0);
+}
+
+void Mesh::GuiDraw()
+{
+	glBindVertexArray(m_glVertexArrayObject);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, draw_count);
+	glDisable(GL_BLEND);
+	glBindVertexArray(0);
+}
+
 Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &m_glVertexArrayObject);

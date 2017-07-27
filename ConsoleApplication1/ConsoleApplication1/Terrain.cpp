@@ -64,11 +64,11 @@ IndexedModel Terrain::generateTerrain()
 
 void Terrain::BindTexture()
 {
-	terrainTextures.grassTexture.Bind(0);
+	terrainTextures.grassTexture.Bind(0, true);
 	//terrainTextures.dirtTexture.Bind(1);
-	terrainTextures.flowerTexture.Bind(2);
-	terrainTextures.tileTexture.Bind(3);
-	blendMapTexture.Bind(4);
+	terrainTextures.flowerTexture.Bind(2, true);
+	terrainTextures.tileTexture.Bind(3, true);
+	blendMapTexture.Bind(4, true);
 }
 
 Terrain::~Terrain()

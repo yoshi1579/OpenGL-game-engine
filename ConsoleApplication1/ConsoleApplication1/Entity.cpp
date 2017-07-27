@@ -36,3 +36,17 @@ void Entity::SetPositionY(float posY)
 {
 	transforms.front().GetPos().y = posY;
 }
+
+float Entity::CalculateTextureOffsetX(int texIndex)
+{
+	int currentCol = texIndex % texture->GetTextureRows();
+
+	return (float)currentCol / (float)texture->GetTextureRows();
+}
+
+float Entity::CalculateTextureOffsetY(int texIndex)
+{
+	int currentRow = texIndex / texture->GetTextureRows();
+
+	return (float)currentRow / (float)texture->GetTextureRows();
+}

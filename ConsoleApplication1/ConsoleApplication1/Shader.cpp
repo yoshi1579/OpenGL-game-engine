@@ -30,8 +30,6 @@ Shader::Shader(const string& sourcePath)
 	CheckValidationError(shaderProgram);
 	uniforms[TRANSFORM] = glGetUniformLocation(shaderProgram, "transMatrix");
 	uniforms[PROJECTION] = glGetUniformLocation(shaderProgram, "projectionMatirx");
-	uniforms[LIGHTPOS] = glGetUniformLocation(shaderProgram, "lightPosition");
-	uniforms[LIGHTCOL] = glGetUniformLocation(shaderProgram, "lightColor");
 	uniforms[CAMERAPOS] = glGetUniformLocation(shaderProgram, "cameraPos");
 	uniforms[REFLECTIVITY] = glGetUniformLocation(shaderProgram, "reflectivity");
 	uniforms[SHADERDUMP] = glGetUniformLocation(shaderProgram, "shaderDump");
@@ -42,6 +40,22 @@ Shader::Shader(const string& sourcePath)
 	uniforms[TERRAIN_TEX_B] = glGetUniformLocation(shaderProgram, "tileTexture");
 	uniforms[TERRAIN_TEX_BACK] = glGetUniformLocation(shaderProgram, "grassTexture");
 	uniforms[BLENDMAP_TEX] = glGetUniformLocation(shaderProgram, "blendMapTexture");
+	uniforms[TEXTUER_NUM_ROWS] = glGetUniformLocation(shaderProgram, "textureNumRows");
+	uniforms[TEXTUER_OFFSET] = glGetUniformLocation(shaderProgram, "texOffset");
+
+	string str;
+	for (int i = 0; i < MAX_LIGHTS; i++)
+	{
+		str = "lightPosition[";
+		str += to_string(i) + "]";
+		lightsPos[i] = glGetUniformLocation(shaderProgram, &str[0] );
+		str = "lightColor[";
+		str += to_string(i) + "]";
+		lightColors[i] = glGetUniformLocation(shaderProgram, &str[0]);
+		str = "attenuation[";
+		str += to_string(i) + "]";
+		lightAttenu[i] = glGetUniformLocation(shaderProgram, &str[0]);
+	}
 }
 
 Shader::Shader()
@@ -73,14 +87,26 @@ void Shader::terrainTexUniformBind()
 }
 
 void Shader::Update(const Transform & transform, Camera camera, 
-	const glm::vec3& lightPos, const glm::vec3& lightCol, 
-	const float& reflectivity, const float& shineDump, const float& needFakeNormal, const glm::vec3& skyColor)
+	list<Light> lights, const float& reflectivity, const float& shineDump, const float& needFakeNormal, 
+	const glm::vec3& skyColor, const float& texNumRow, const glm::vec2& texOffset)
 {
+	int i = 0;
 	glm::vec3 cameraPos = camera.GetPos();
 	glUniformMatrix4fv(uniforms[TRANSFORM], 1, GL_FALSE, &transform.GetModel()[0][0]);
 	glUniformMatrix4fv(uniforms[PROJECTION], 1, GL_FALSE, &camera.GetViewProjection()[0][0]);
-	glUniform3fv(uniforms[LIGHTPOS], 1, &lightPos[0]);
-	glUniform3fv(uniforms[LIGHTCOL], 1, &lightCol[0]);
+	for (list<Light>::iterator it = lights.begin(); it != lights.end(); ++it)
+	{
+		glUniform3fv(lightsPos[i], 1, &it->GetLightPos()[0]);
+		glUniform3fv(lightColors[i], 1, &it->GetLightColor()[0]);
+		glUniform3fv(lightAttenu[i], 1, &it->GetAttenuation()[0]);
+		i++;
+	}
+	for (i; i < MAX_LIGHTS; i++)
+	{
+		glUniform3fv(lightsPos[i], 1, &glm::vec3(0.0)[0]);
+		glUniform3fv(lightColors[i], 1, &glm::vec3(0.0)[0]);
+		glUniform3fv(lightAttenu[i], 1, &glm::vec3(1.0, 0, 0)[0]);
+	}
 	glUniform3fv(uniforms[CAMERAPOS], 1, &cameraPos[0]);
 	glUniform1fv(uniforms[REFLECTIVITY], 1, &reflectivity);
 	glUniform1fv(uniforms[SHADERDUMP], 1, &shineDump);
@@ -91,6 +117,23 @@ void Shader::Update(const Transform & transform, Camera camera,
 	glUniform1i(uniforms[TERRAIN_TEX_G], 2);
 	glUniform1i(uniforms[TERRAIN_TEX_B], 3);
 	glUniform1i(uniforms[BLENDMAP_TEX], 4);
+	glUniform1fv(uniforms[TEXTUER_NUM_ROWS], 1, &texNumRow);
+	glUniform2fv(uniforms[TEXTUER_OFFSET], 1, &texOffset[0]);
+}
+
+void Shader::GuiUpdate(const Transform & transform)
+{
+	glUniformMatrix4fv(uniforms[TRANSFORM], 1, GL_FALSE, &transform.GetModel()[0][0]);
+}
+
+void Shader::SkyboxUpdate(Camera camera)
+{
+	glm::mat4 mat = camera.GetViewMatrix();
+	mat[3][0] = 0;
+	mat[3][1] = 0;
+	mat[3][2] = 0;
+	glm::mat4 resultMat = camera.GetProjectionMatrix() * mat;
+	glUniformMatrix4fv(uniforms[PROJECTION], 1, GL_FALSE, &resultMat[0][0]);
 }
 
 static GLuint CreateShader(const string& source, GLenum shaderType)

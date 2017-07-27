@@ -1,7 +1,7 @@
 #version 330
 
 in vec2 texCoord0;
-in vec3 toLightVector;
+in vec3 toLightVector[4];
 in vec3 normalVector;
 in vec3 toCameraVector;
 in float visibility;
@@ -13,26 +13,27 @@ uniform sampler2D flowerTexture;
 uniform sampler2D tileTexture;
 uniform sampler2D blendMapTexture;
 
-uniform vec3 lightColor;
+uniform vec3 lightColor[4];
+uniform vec3 attenuation[4];
 uniform float reflectivity;
 uniform float shaderDump;
 uniform vec3 skyColor;
 
 void main()
 {
-	vec3 unitNormalVector = normalize(normalVector);
-	vec3 unitToLightVector = normalize(toLightVector);
-	float dotProduct = dot(unitToLightVector, unitNormalVector);
-	float brightness = max(dotProduct, 0.2);
-	vec3 diffuse = brightness * lightColor;
-	
-
-	vec3 lightDirection = -unitToLightVector; 
-	vec3 reflectedLight = reflect(lightDirection, unitNormalVector);
-	float specularFactor = dot(normalize(toCameraVector), reflectedLight);
-	specularFactor = max(specularFactor, 0.0);
-	float dumpFactor = pow(specularFactor , shaderDump);
-	vec3 finalSpecular = dumpFactor * lightColor;
+	vec3 totalDiffuse = vec3(0.0);
+	float lightAttenu = 1;
+	for (int i = 0; i < 4; i++)
+	{
+		float distance = length(toLightVector[i]);
+		lightAttenu = attenuation[i].x + (attenuation[i].y * distance) + (attenuation[i].z * distance * distance);
+		vec3 unitNormalVector = normalize(normalVector);
+		vec3 unitToLightVector = normalize(toLightVector[i]);
+		float dotProduct = dot(unitToLightVector, unitNormalVector);
+		float brightness = max(dotProduct, 0.0);
+		totalDiffuse = totalDiffuse + (brightness * lightColor[i] / lightAttenu);
+	}
+	totalDiffuse = max(totalDiffuse, 0.2);
 
 	vec4 blendMapColor = texture2D(blendMapTexture, texCoord0);
 	float backgroundAmount = 1 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);
@@ -43,6 +44,6 @@ void main()
 	vec4 tileColor = texture2D(tileTexture, texCoord)* blendMapColor.b;
 	vec4 finalColor = backgroundColor + dirtColor + flowerColor + tileColor;
 	
-	outColor = vec4(diffuse, 1.0) * finalColor  + vec4(finalSpecular, 1.0);
+	outColor = vec4(totalDiffuse, 1.0) * finalColor;
 	outColor = mix(vec4(skyColor, 1.0), outColor, visibility);
 }

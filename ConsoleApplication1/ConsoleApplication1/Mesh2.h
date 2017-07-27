@@ -12,11 +12,9 @@ using namespace std;
 class Vertex
 {
 public:
-	Vertex(const glm::vec3& pos, const glm::vec2& texCoord)
-	{
-		this->pos = pos;
-		this->texCoord = texCoord;
-	}
+	Vertex(const glm::vec3& position = glm::vec3(0.0), const glm::vec2& textureCoord = glm::vec2(0.0)) :
+		pos(position),
+		texCoord(textureCoord) {}
 	inline glm::vec3* GetPos() { return &pos; }
 	inline glm::vec2* GetTexCoord() { return &texCoord; }
 	
@@ -36,6 +34,8 @@ public:
 	Mesh();
 	
 	void Draw();
+	void GuiDraw();
+	void SkyboxDraw();
 	~Mesh();
 private:
 	void initMesh(const IndexedModel& model);

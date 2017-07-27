@@ -35,6 +35,11 @@ public:
 		return glm::lookAt(pos, pos + forward, up);
 	}
 
+	inline glm::mat4 GetProjectionMatrix() 
+	{ 
+		return projection; 
+	}
+
 	inline glm::mat4 GetViewProjection() const
 	{
 		return projection * glm::lookAt(pos, pos + forward, up);

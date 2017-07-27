@@ -153,6 +153,7 @@
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="terrain_texture.cpp" />
@@ -163,10 +164,13 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FrameTime.h" />
+    <ClInclude Include="GuiTexture.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Mesh2.h" />
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="terrain_texture.h" />
